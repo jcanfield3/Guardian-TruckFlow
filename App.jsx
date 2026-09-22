@@ -1,34 +1,25 @@
-import { useState, useEffect, useCallback } from "react";
-
-// ── Storage — uses Anthropic shared storage when available, localStorage fallback ──
-const STORAGE_PREFIX = "tfbeta_";
+import { supabase } from "./supabaseClient";
 
 async function sharedGet(key) {
-  // Try Anthropic shared storage first (Claude artifact environment)
   try {
-    if (window.storage && typeof window.storage.get === "function") {
-      const r = await window.storage.get(key, true);
-      return r ? JSON.parse(r.value) : null;
-    }
-  } catch {}
-  // Fallback to localStorage (production/GitHub Pages)
-  try {
-    const v = localStorage.getItem(STORAGE_PREFIX + key);
-    return v ? JSON.parse(v) : null;
-  } catch { return null; }
+    const { data, error } = await supabase
+      .from("shared_storage")
+      .select("value")
+      .eq("key", key)
+      .maybeSingle();
+    if (error) throw error;
+    return data ? data.value : null;
+  } catch {
+    return null;
+  }
 }
 
 async function sharedSet(key, val) {
-  // Try Anthropic shared storage first
   try {
-    if (window.storage && typeof window.storage.set === "function") {
-      await window.storage.set(key, JSON.stringify(val), true);
-      return;
-    }
-  } catch {}
-  // Fallback to localStorage
-  try {
-    localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(val));
+    const { error } = await supabase
+      .from("shared_storage")
+      .upsert({ key, value: val, updated_at: new Date().toISOString() }, { onConflict: "key" });
+    if (error) throw error;
   } catch {}
 }
 
