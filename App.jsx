@@ -253,10 +253,9 @@ function QuickCheck({operator, brokers, onSaveLoad}) {
     fuelPerTrip:"",distanceMiles:"",fuelCost:"",tolls:"",waitTime:"",waitRate:"75",materialType:"",jobSite:""});
   const setD=(k,v)=>setDb(p=>({...p,[k]:v}));
 
-  const [cb,setCb] = useState({railyard:"",destination:"",zone:"Zone 1",zoneRate:"175",overrideRate:"",
-    miles:"",fuel:"",tolls:"",chassis:"",detentionHrs:"",detentionRate:"65",
-    prePull:"",storage:"",hazmat:"",overweight:"",hours:""});
-  const setCf=(k,v)=>setCb(p=>({...p,[k]:v}));
+ const [cb,setCb] = useState({region:operator.homeBase||"",railyard:"",destination:"",zone:"Zone 1",zoneRate:"175",overrideRate:"",
+  miles:"",fuel:"",tolls:"",chassis:"",detentionHrs:"",detentionRate:"65",
+  prePull:"",storage:"",hazmat:"",overweight:"",hours:""});
 
   const brokerInfo = brokers.find(b=>b.name===broker);
 
@@ -317,6 +316,7 @@ function QuickCheck({operator, brokers, onSaveLoad}) {
 
   function calcContainer() {
   const zoneData=DEFAULT_ZONES.find(z=>z.zone===cb.zone)||DEFAULT_ZONES[0];
+  const th=getDrayageThresholds(cb.region);
   const baseRate=parseFloat(cb.overrideRate)||parseFloat(cb.zoneRate)||zoneData.baseRate;
   const chassis=parseFloat(cb.chassis)||0;
   const detention=(parseFloat(cb.detentionHrs)||0)*(parseFloat(cb.detentionRate)||65);
@@ -330,7 +330,6 @@ function QuickCheck({operator, brokers, onSaveLoad}) {
   const hours=parseFloat(cb.hours)||0;
   const pph=hours>0?profit/hours:0;
 
-  const th=getDrayageThresholds(cb.region);
   let score,color;
   if(hours<=0){
     score="REVIEW";color=C.yellow; // can't score confidently without hours
@@ -587,6 +586,9 @@ function QuickCheck({operator, brokers, onSaveLoad}) {
                 <Field label="Railyard / Port"><input placeholder="BNSF St. Paul..." value={cb.railyard} onChange={e=>setCf("railyard",e.target.value)}/></Field>
                 <Field label="Delivery Location"><input placeholder="City, State" value={cb.destination} onChange={e=>setCf("destination",e.target.value)}/></Field>
               </div>
+              <Field label="Region (for local thresholds)">
+                <input placeholder="e.g. Chicago, IL" value={cb.region} onChange={e=>setCf("region",e.target.value)}/>
+               </Field>
               <Field label="Delivery Zone">
                 <select value={cb.zone} onChange={e=>onZoneChange(e.target.value)}>
                   {DEFAULT_ZONES.map(z=><option key={z.zone} value={z.zone}>{z.zone} ({z.miles} mi) — ${z.baseRate}</option>)}
