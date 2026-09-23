@@ -93,6 +93,18 @@ const DEFAULT_ZONES = [
   {zone:"Zone 8",miles:"176-200",baseRate:525},
 ];
 
+const DRAYAGE_THRESHOLDS = {
+  default: { takePerHour: 60, takeProfit: 150, reviewPerHour: 35, reviewProfit: 75 },
+  regions: {
+    // "Chicago, IL": { takePerHour: 70, takeProfit: 175, reviewPerHour: 40, reviewProfit: 90 },
+    // Add more as you learn regional rates — key must match the region text exactly.
+  }
+};
+
+function getDrayageThresholds(region) {
+  return DRAYAGE_THRESHOLDS.regions[region] || DRAYAGE_THRESHOLDS.default;
+}
+
 const isDump      = eq => DUMP_TYPES.includes(eq);
 const isContainer = eq => CONTAINER_TYPES.includes(eq);
 const fmt$ = n => isNaN(n) ? "$0.00" : "$"+Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,",");
@@ -602,6 +614,9 @@ function QuickCheck({operator, brokers, onSaveLoad}) {
                 <Field label="Tolls ($)"><input type="number" placeholder="0" value={cb.tolls} onChange={e=>setCf("tolls",e.target.value)}/></Field>
                 <Field label="Chassis Fee ($)"><input type="number" placeholder="25" value={cb.chassis} onChange={e=>setCf("chassis",e.target.value)}/></Field>
               </div>
+              <Field label="Total Hours (gate to gate)">
+  <input type="number" placeholder="2.5" value={cb.hours} onChange={e=>setCf("hours",e.target.value)}/>
+</Field>
               <div style={{padding:12,background:C.surface,borderRadius:8,marginBottom:16}}>
                 <div style={{fontSize:11,color:C.blue,fontWeight:700,textTransform:"uppercase",letterSpacing:1,marginBottom:10}}>Accessorials</div>
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
