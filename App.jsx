@@ -746,21 +746,21 @@ function BrokerMemory({brokers,setBrokers,operator}) {
   const [form,setForm] = useState({...blank});
   const setF=(k,v)=>setForm(p=>({...p,[k]:v}));
 
-  async function addBroker() {
-    if(!form.name) return;
-    setLoading(true);
-    const entry={...form,id:uid(),addedBy:operator.name,addedOn:new Date().toLocaleDateString()};
-    const updated=[entry,...brokers];
-    setBrokers(updated);
-    await sharedSet("beta_brokers",updated);
-    setShowAdd(false); setForm({...blank}); setLoading(false);
-  }
+ async function addBroker() {
+  if(!form.name) return;
+  setLoading(true);
+  const entry={...form,id:uid(),addedBy:operator.name,addedByDevice:operator.deviceId,addedOn:new Date().toLocaleDateString()};
+  const updated=[entry,...brokers];
+  setBrokers(updated);
+  await sharedSet("beta_brokers",updated);
+  setShowAdd(false); setForm({...blank}); setLoading(false);
+}
 
-  async function rateBroker(id, field, val) {
-    const updated=brokers.map(b=>b.id===id?{...b,[field]:val,lastUpdatedBy:operator.name}:b);
-    setBrokers(updated);
-    await sharedSet("beta_brokers",updated);
-  }
+async function rateBroker(id, field, val) {
+  const updated=brokers.map(b=>b.id===id?{...b,[field]:val,lastUpdatedBy:operator.name,lastUpdatedByDevice:operator.deviceId}:b);
+  setBrokers(updated);
+  await sharedSet("beta_brokers",updated);
+}
 
   return (
     <div className="fade">
