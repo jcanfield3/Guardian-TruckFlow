@@ -316,26 +316,35 @@ function QuickCheck({operator, brokers, onSaveLoad}) {
   }
 
   function calcContainer() {
-    const zoneData=DEFAULT_ZONES.find(z=>z.zone===cb.zone)||DEFAULT_ZONES[0];
-    const baseRate=parseFloat(cb.overrideRate)||parseFloat(cb.zoneRate)||zoneData.baseRate;
-    const chassis=parseFloat(cb.chassis)||0;
-    const detention=(parseFloat(cb.detentionHrs)||0)*(parseFloat(cb.detentionRate)||65);
-    const prePull=parseFloat(cb.prePull)||0,storage=parseFloat(cb.storage)||0;
-    const hazmat=parseFloat(cb.hazmat)||0,overweight=parseFloat(cb.overweight)||0;
-    const grossRevenue=baseRate+chassis+detention+prePull+storage+hazmat+overweight;
-    const fuel=parseFloat(cb.fuel)||0,tolls=parseFloat(cb.tolls)||0;
-    const miles=parseFloat(cb.miles)||0;
-    const totalCost=fuel+tolls,profit=grossRevenue-totalCost;
-    const rpm=miles>0?grossRevenue/miles:0;
-    const pph=parseFloat(cb.hours)>0?profit/parseFloat(cb.hours):0;
-    let score,color;
-    if(rpm>=2.00&&profit>0){score="TAKE";color=C.green;}
-    else if(rpm>=1.40&&profit>0){score="REVIEW";color=C.yellow;}
-    else{score="PASS";color=C.red;}
-    return {grossRevenue,baseRate,chassis,detention,prePull,storage,hazmat,overweight,
-      fuel,tolls,totalCost,profit,rpm,pph,miles,score,color,type:"container",
-      equipment:containerType,zone:cb.zone};
+  const zoneData=DEFAULT_ZONES.find(z=>z.zone===cb.zone)||DEFAULT_ZONES[0];
+  const baseRate=parseFloat(cb.overrideRate)||parseFloat(cb.zoneRate)||zoneData.baseRate;
+  const chassis=parseFloat(cb.chassis)||0;
+  const detention=(parseFloat(cb.detentionHrs)||0)*(parseFloat(cb.detentionRate)||65);
+  const prePull=parseFloat(cb.prePull)||0,storage=parseFloat(cb.storage)||0;
+  const hazmat=parseFloat(cb.hazmat)||0,overweight=parseFloat(cb.overweight)||0;
+  const grossRevenue=baseRate+chassis+detention+prePull+storage+hazmat+overweight;
+  const fuel=parseFloat(cb.fuel)||0,tolls=parseFloat(cb.tolls)||0;
+  const miles=parseFloat(cb.miles)||0;
+  const totalCost=fuel+tolls,profit=grossRevenue-totalCost;
+  const rpm=miles>0?grossRevenue/miles:0;
+  const hours=parseFloat(cb.hours)||0;
+  const pph=hours>0?profit/hours:0;
+
+  const th=getDrayageThresholds(cb.region);
+  let score,color;
+  if(hours<=0){
+    score="REVIEW";color=C.yellow; // can't score confidently without hours
+  } else if(pph>=th.takePerHour && profit>th.takeProfit){
+    score="TAKE";color=C.green;
+  } else if(pph>=th.reviewPerHour && profit>th.reviewProfit){
+    score="REVIEW";color=C.yellow;
+  } else {
+    score="PASS";color=C.red;
   }
+  return {grossRevenue,baseRate,chassis,detention,prePull,storage,hazmat,overweight,
+    fuel,tolls,totalCost,profit,rpm,pph,miles,score,color,type:"container",
+    equipment:containerType,zone:cb.zone,region:cb.region};
+}
 
   const [dumpPricing,setDumpPricing] = useState("Per Ton");
 
