@@ -848,17 +848,33 @@ async function rateBroker(id, field, val) {
               </div>
               {b.notes&&<div style={{padding:10,background:C.surface,borderRadius:8,fontSize:12,color:C.muted,marginBottom:12,lineHeight:1.6}}>{b.notes}</div>}
 
-              {/* Quick rate update */}
-              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                {Object.entries(BROKER_TIERS).map(([k,v])=>(
-                  <button key={k} onClick={()=>rateBroker(b.id,"tier",k)} style={{
-                    padding:"4px 10px",borderRadius:16,border:`1px solid ${b.tier===k?v.color:C.border}`,
-                    background:b.tier===k?`${v.color}22`:"transparent",
-                    color:b.tier===k?v.color:C.muted,fontSize:10,fontWeight:600,cursor:"pointer"}}>
-                    {v.label}
-                  </button>
-                ))}
-              </div>
+              {(() => {
+  const myRating = b.deviceRatings?.[operator.deviceId];
+  const timesRated = myRating?.count || 0;
+  const locked = timesRated >= 2;
+  return (
+    <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+      {Object.entries(BROKER_TIERS).map(([k,v])=>(
+        <button key={k} onClick={()=>!locked && rateBroker(b.id,"tier",k)}
+          disabled={locked}
+          style={{
+            padding:"4px 10px",borderRadius:16,border:`1px solid ${b.tier===k?v.color:C.border}`,
+            background:b.tier===k?`${v.color}22`:"transparent",
+            color:b.tier===k?v.color:C.muted,fontSize:10,fontWeight:600,
+            cursor:locked?"not-allowed":"pointer",
+            opacity:locked?0.5:1}}>
+          {v.label}
+        </button>
+      ))}
+      {timesRated === 1 && (
+        <span style={{fontSize:10,color:C.muted,alignSelf:"center"}}>You can change this rating once more</span>
+      )}
+      {locked && (
+        <span style={{fontSize:10,color:C.muted,alignSelf:"center"}}>Your rating is locked in</span>
+      )}
+    </div>
+  );
+})()}
               {b.lastUpdatedBy&&b.lastUpdatedBy!==b.addedBy&&(
                 <div style={{fontSize:10,color:C.muted,marginTop:6}}>Last updated by: {b.lastUpdatedBy}</div>
               )}
