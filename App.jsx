@@ -73,8 +73,8 @@ const C = {
 };
 
 const DUMP_TYPES    = ["Standard Dump","End Dump","Side Dump","Belly Dump"];
-const FLATBED_TYPES = ["Flatbed","Step Deck","Lowboy","RGN","Double Drop","Conestoga","Hotshot"];
-const CONTAINER_TYPES = ["20ft Container","40ft Container","40ft HC Container","45ft Container","Triaxle Container"];
+const FLATBED_TYPES = ["Flatbed","Step Deck","Lowboy","RGN","Double Drop","Conestoga","Hotshot","Van","Reefer"];
+const CONTAINER_TYPES = ["20ft Container","40ft Container","40ft HC Container","45ft Container","48ft Container","53ft Container","Triaxle Container"];
 const DUMP_PRICING  = ["Per Ton","Per Hour","Per Load (Flat Rate)"];
 const BROKER_TIERS  = {
   PREFERRED:{color:"#00C853",label:"Preferred"},
