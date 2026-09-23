@@ -171,9 +171,9 @@ function Onboarding({onComplete}) {
   const [years,setYears] = useState("");
 
   function submit() {
-    if(!name.trim()) return;
-    onComplete({name:name.trim(), equipment, homeBase, years, id:uid(), joined:new Date().toLocaleDateString()});
-  }
+  if(!name.trim()) return;
+  onComplete({name:name.trim(), equipment, homeBase, years, id:uid(), deviceId:getDeviceId(), joined:new Date().toLocaleDateString()});
+}
 
   return (
     <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",
