@@ -20,12 +20,9 @@ async function sharedSet(key, val) {
     const { error } = await supabase
       .from("shared_storage")
       .upsert({ key, value: val, updated_at: new Date().toISOString() }, { onConflict: "key" });
-    if (error) {
-      alert("Supabase write error: " + JSON.stringify(error));
-      throw error;
-    }
+    if (error) throw error;
   } catch (e) {
-    alert("sharedSet failed: " + e.message);
+    console.error("sharedSet failed:", e);
   }
 }
 
