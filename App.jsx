@@ -757,11 +757,28 @@ function BrokerMemory({brokers,setBrokers,operator}) {
 }
 
 async function rateBroker(id, field, val) {
-  const updated=brokers.map(b=>b.id===id?{...b,[field]:val,lastUpdatedBy:operator.name,lastUpdatedByDevice:operator.deviceId}:b);
-  setBrokers(updated);
-  await sharedSet("beta_brokers",updated);
-}
+  const broker = brokers.find(b => b.id === id);
+  const myRating = broker?.deviceRatings?.[operator.deviceId];
+  const timesRated = myRating?.count || 0;
 
+  if (timesRated >= 2) return; // used initial rating + 1 correction, now locked
+
+  const updated = brokers.map(b => b.id === id
+    ? {
+        ...b,
+        [field]: val,
+        lastUpdatedBy: operator.name,
+        lastUpdatedByDevice: operator.deviceId,
+        deviceRatings: {
+          ...(b.deviceRatings || {}),
+          [operator.deviceId]: { value: val, count: timesRated + 1 }
+        }
+      }
+    : b
+  );
+  setBrokers(updated);
+  await sharedSet("beta_brokers", updated);
+}
   return (
     <div className="fade">
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
