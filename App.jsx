@@ -268,7 +268,7 @@ function QuickCheck({operator, brokers, onSaveLoad}) {
  const [cb,setCb] = useState({region:operator.homeBase||"",railyard:"",destination:"",zone:"Zone 1",zoneRate:"175",overrideRate:"",
   miles:"",fuel:"",tolls:"",chassis:"",detentionHrs:"",detentionRate:"65",
   prePull:"",storage:"",hazmat:"",overweight:"",hours:""});
-
+  const setCf=(k,v)=>setCb(p=>({...p,[k]:v}));
   const brokerInfo = brokers.find(b=>b.name===broker);
 
   function onZoneChange(z) {
@@ -430,7 +430,7 @@ function QuickCheck({operator, brokers, onSaveLoad}) {
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:8}}>
         <div className="bebas" style={{fontSize:30,color:C.green}}>Quick Check</div>
         <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-          <Pill label="🚛 Flatbed" active={mode==="flatbed"} color={C.green} onClick={()=>{setMode("flatbed");setResult(null);setSaved(false);}}/>
+         <Pill label="🚛 RFR/VAN/Flat" active={mode==="flatbed"} color={C.green} onClick={()=>{setMode("flatbed");setResult(null);setSaved(false);}}/>
           <Pill label="🏗️ Dump" active={mode==="dump"} color={C.orange} onClick={()=>{setMode("dump");setResult(null);setSaved(false);}}/>
           <Pill label="📦 Container" active={mode==="container"} color={C.blue} onClick={()=>{setMode("container");setResult(null);setSaved(false);}}/>
           <Pill label="🕘 My History" active={showHistory} color={C.cyan} onClick={()=>showHistory?setShowHistory(false):openHistory()}/>
