@@ -51,7 +51,18 @@ async function personalSet(key, val) {
     localStorage.setItem(STORAGE_PREFIX + "personal_" + key, JSON.stringify(val));
   } catch {}
 }
-
+function getDeviceId() {
+  try {
+    let id = localStorage.getItem("tfbeta_device_id");
+    if (!id) {
+      id = "dev_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem("tfbeta_device_id", id);
+    }
+    return id;
+  } catch {
+    return "dev_unknown";
+  }
+}
 // ── Theme ────────────────────────────────────────────────────────────────────
 const C = {
   bg:"#080F0C", surface:"#0F1A14", card:"#131E17", border:"#1E3028",
